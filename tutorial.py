@@ -3,7 +3,8 @@ import pox.openflow.libopenflow_01 as of
 import re
 from pox.lib.util import dpidToStr
 import tool 
-
+from graph1 import parse,draw_graph 
+import time
 log = core.getLogger()
 
 class Tutorial (object):
@@ -72,22 +73,40 @@ class Tutorial (object):
       # push the rule
       self.connection.send(msg)
       print "DPID. is it a Jaaakpot"
-      print dpidToStr(self.connection.dpid) 
+      dpid=dpidToStr(self.connection.dpid)
+      l=[]
+      l=dpid.split('-');
+      final_dpid=''
+      for i in l:
+	final_dpid=final_dpid+i
+      final_dpid="0000"+final_dpid
+      print "blah";
+      print final_dpid;
+     # print dpidToStr(self.connection.dpid) 
       my_dict = {}
-      with open("/home/mininet/SwitchMapping.txt","r") as f:
+      with open("/home/saumya/Downloads/SwitchMapping.txt","r") as f:
 	for line in f:
 		items = line.split(',')
 		key , value = items[1],items[0]
+		key=key.rstrip();
 		my_dict[key]=value
       print my_dict
-	
+      mdict2 = {}
+      with open("/home/saumya/Downloads/MacHost.txt","r") as f:
+	for line in f:
+		print "l",line;
+		items = line.split(' ')
+		key , value = items[1],items[0]
+		key=key.rstrip();
+		mdict2[key]=value
+      print "my";
+      print mdict2;
       #tool.addRuleToGUI(dpidToStr(self.connection.dpid),self.mac_to_port[packet.dst])
-      print "packet.dst"
-      print packet.dst
-      print "########packet next vars"
-      print vars(packet.next)
-      tool.addRuleToGUI(my_dict.get(dpidToStr(self.connection.dpid)),self.mac_to_port[packet.dst])
-      
+      print "packet",packet.dst;
+      tool.addRuleToGUI(my_dict.get(final_dpid),self.mac_to_port[packet.dst],mdict2.get(str(packet.dst)));
+      #parse("asdjhaksh");
+      #draw_graph()
+      #time.sleep(5); 
       #print "self connection vars"
       #print vars(self.connection)
       #print str(self.connection)
@@ -103,8 +122,8 @@ class Tutorial (object):
     Handles packet in messages from the switch.
     """
     packet = event.parsed # This is the parsed packet data.
-    print "vars event"	
-    print vars(event)
+    #print "handle pkt self"	
+    #print vars(self)
     
     if not packet.parsed:
       log.warning("Ignoring incomplete packet")
